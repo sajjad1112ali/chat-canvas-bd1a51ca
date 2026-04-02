@@ -12,7 +12,7 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!value.trim()) return;
+    if (!value.trim() || disabled) return;
     onSend(value.trim());
     setValue("");
   };
