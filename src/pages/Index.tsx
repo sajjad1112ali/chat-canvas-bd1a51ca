@@ -119,7 +119,7 @@ const Index = () => {
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
       />
-      <ChatArea chat={activeChat} onSendMessage={handleSendMessage} />
+      <ChatArea chat={activeChat} onSendMessage={handleSendMessage} isLoading={isLoading} />
     </div>
   );
 };
