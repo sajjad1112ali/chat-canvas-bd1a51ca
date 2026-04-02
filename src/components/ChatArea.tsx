@@ -71,6 +71,25 @@ const ChatArea = ({ chat, onSendMessage, isLoading }: ChatAreaProps) => {
             {chat.messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
             ))}
+            {isLoading && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-1.5 px-4 py-3"
+              >
+                <div className="flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-2 h-2 rounded-full bg-muted-foreground"
+                      animate={{ opacity: [0.3, 1, 0.3] }}
+                      transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-muted-foreground ml-1">AI is thinking...</span>
+              </motion.div>
+            )}
             <div ref={bottomRef} />
           </div>
         )}
