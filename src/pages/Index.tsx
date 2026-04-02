@@ -3,19 +3,14 @@ import { Chat, Message } from "@/types/chat";
 import ChatSidebar from "@/components/ChatSidebar";
 import ChatArea from "@/components/ChatArea";
 
-const AI_RESPONSES = [
-  "That's a great question! Let me think about that for a moment. Based on my analysis, I'd suggest exploring a few different approaches to solve this effectively.",
-  "I'd be happy to help with that! Here's what I recommend based on the information you've provided.",
-  "Interesting! There are several ways to approach this. Let me break it down for you step by step.",
-  "Great point! I've considered multiple perspectives and here's my detailed response to your query.",
-  "Thanks for sharing that. Here are some insights that might help you move forward with confidence.",
-];
+const WORKER_URL = "https://restless-dawn-22da.sajjadramzan1211.workers.dev";
 
 const createId = () => Math.random().toString(36).slice(2, 10);
 
 const Index = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const activeChat = chats.find((c) => c.id === activeChatId) || null;
 
@@ -31,7 +26,7 @@ const Index = () => {
   }, []);
 
   const handleSendMessage = useCallback(
-    (content: string) => {
+    async (content: string) => {
       let chatId = activeChatId;
 
       if (!chatId) {
@@ -65,12 +60,22 @@ const Index = () => {
         })
       );
 
-      // Simulate AI response
-      setTimeout(() => {
+      // Call Cloudflare Worker
+      setIsLoading(true);
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: content }),
+        });
+        const data = await res.json();
+        const aiText =
+          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "Sorry, I couldn't generate a response.";
         const aiMsg: Message = {
           id: createId(),
           role: "ai",
-          content: AI_RESPONSES[Math.floor(Math.random() * AI_RESPONSES.length)],
+          content: aiText,
           timestamp: new Date(),
         };
         setChats((prev) =>
@@ -78,7 +83,21 @@ const Index = () => {
             c.id === chatId ? { ...c, messages: [...c.messages, aiMsg] } : c
           )
         );
-      }, 800);
+      } catch {
+        const errMsg: Message = {
+          id: createId(),
+          role: "ai",
+          content: "Sorry, something went wrong. Please try again.",
+          timestamp: new Date(),
+        };
+        setChats((prev) =>
+          prev.map((c) =>
+            c.id === chatId ? { ...c, messages: [...c.messages, errMsg] } : c
+          )
+        );
+      } finally {
+        setIsLoading(false);
+      }
     },
     [activeChatId]
   );
@@ -100,7 +119,7 @@ const Index = () => {
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
       />
-      <ChatArea chat={activeChat} onSendMessage={handleSendMessage} />
+      <ChatArea chat={activeChat} onSendMessage={handleSendMessage} isLoading={isLoading} />
     </div>
   );
 };
