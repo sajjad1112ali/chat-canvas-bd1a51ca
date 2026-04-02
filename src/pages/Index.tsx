@@ -60,12 +60,22 @@ const Index = () => {
         })
       );
 
-      // Simulate AI response
-      setTimeout(() => {
+      // Call Cloudflare Worker
+      setIsLoading(true);
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: content }),
+        });
+        const data = await res.json();
+        const aiText =
+          data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+          "Sorry, I couldn't generate a response.";
         const aiMsg: Message = {
           id: createId(),
           role: "ai",
-          content: AI_RESPONSES[Math.floor(Math.random() * AI_RESPONSES.length)],
+          content: aiText,
           timestamp: new Date(),
         };
         setChats((prev) =>
@@ -73,7 +83,21 @@ const Index = () => {
             c.id === chatId ? { ...c, messages: [...c.messages, aiMsg] } : c
           )
         );
-      }, 800);
+      } catch {
+        const errMsg: Message = {
+          id: createId(),
+          role: "ai",
+          content: "Sorry, something went wrong. Please try again.",
+          timestamp: new Date(),
+        };
+        setChats((prev) =>
+          prev.map((c) =>
+            c.id === chatId ? { ...c, messages: [...c.messages, errMsg] } : c
+          )
+        );
+      } finally {
+        setIsLoading(false);
+      }
     },
     [activeChatId]
   );
