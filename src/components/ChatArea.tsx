@@ -11,7 +11,7 @@ interface ChatAreaProps {
   isLoading?: boolean;
 }
 
-const ChatArea = ({ chat, onSendMessage }: ChatAreaProps) => {
+const ChatArea = ({ chat, onSendMessage, isLoading }: ChatAreaProps) => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
