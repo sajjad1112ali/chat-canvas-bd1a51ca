@@ -97,7 +97,7 @@ const ChatArea = ({ chat, onSendMessage, isLoading }: ChatAreaProps) => {
 
       {/* Input */}
       <div className="max-w-3xl mx-auto w-full">
-        <ChatInput onSend={onSendMessage} />
+        <ChatInput onSend={onSendMessage} disabled={isLoading} />
       </div>
     </div>
   );
