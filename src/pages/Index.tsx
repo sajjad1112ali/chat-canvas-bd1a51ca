@@ -26,7 +26,7 @@ const Index = () => {
   }, []);
 
   const handleSendMessage = useCallback(
-    (content: string) => {
+    async (content: string) => {
       let chatId = activeChatId;
 
       if (!chatId) {

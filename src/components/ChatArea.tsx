@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 interface ChatAreaProps {
   chat: Chat | null;
   onSendMessage: (content: string) => void;
+  isLoading?: boolean;
 }
 
 const ChatArea = ({ chat, onSendMessage }: ChatAreaProps) => {
