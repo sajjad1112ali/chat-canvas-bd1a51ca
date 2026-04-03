@@ -4,14 +4,15 @@ import ChatSidebar from "@/components/ChatSidebar";
 import ChatArea from "@/components/ChatArea";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { useLocalStorage } from "@/hooks/useLocalStorage";
 
 const WORKER_URL = "https://restless-dawn-22da.sajjadramzan1211.workers.dev";
 
 const createId = () => Math.random().toString(36).slice(2, 10);
 
 const Index = () => {
-  const [chats, setChats] = useState<Chat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [chats, setChats] = useLocalStorage<Chat[]>("chats", []);
+  const [activeChatId, setActiveChatId] = useLocalStorage<string | null>("activeChatId", null);
   const [isLoading, setIsLoading] = useState(false);
 
   const activeChat = chats.find((c) => c.id === activeChatId) || null;

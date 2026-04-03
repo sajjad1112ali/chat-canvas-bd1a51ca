@@ -37,7 +37,7 @@ const ChatArea = ({ chat, onSendMessage, isLoading }: ChatAreaProps) => {
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-3 border-b border-border">
         <h2 className="text-sm font-medium text-foreground truncate">
-          {chat?.title || "Fusion AI"}
+          {chat?.title || "Chat Nova"}
         </h2>
         {chat && chat.messages.length > 0 && (
           <motion.button
@@ -60,9 +60,11 @@ const ChatArea = ({ chat, onSendMessage, isLoading }: ChatAreaProps) => {
               <Sparkles className="w-7 h-7 text-foreground" />
             </div>
             <div className="text-center space-y-2">
-              <h3 className="text-lg font-semibold text-foreground">Start your conversation</h3>
+              <h3 className="text-lg font-semibold text-foreground">
+                Start your conversation
+              </h3>
               <p className="text-sm text-muted-foreground max-w-xs">
-                Ask anything and let Fusion AI assist you with your tasks.
+                Ask anything and let Chat Nova assist you with your tasks.
               </p>
             </div>
           </div>
@@ -83,11 +85,17 @@ const ChatArea = ({ chat, onSendMessage, isLoading }: ChatAreaProps) => {
                       key={i}
                       className="w-2 h-2 rounded-full bg-muted-foreground"
                       animate={{ opacity: [0.3, 1, 0.3] }}
-                      transition={{ duration: 1.2, repeat: Infinity, delay: i * 0.2 }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                      }}
                     />
                   ))}
                 </div>
-                <span className="text-xs text-muted-foreground ml-1">AI is thinking...</span>
+                <span className="text-xs text-muted-foreground ml-1">
+                  AI is thinking...
+                </span>
               </motion.div>
             )}
             <div ref={bottomRef} />
