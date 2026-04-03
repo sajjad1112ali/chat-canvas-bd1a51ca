@@ -32,7 +32,7 @@ const MessageBubble = ({ message }: MessageBubbleProps) => {
             : "bg-muted text-foreground rounded-bl-md"
         }`}
       >
-        {message.content}
+        <div dangerouslySetInnerHTML={{ __html: message.content }} />
       </div>
     </motion.div>
   );

@@ -2,6 +2,8 @@ import { useState, useCallback } from "react";
 import { Chat, Message } from "@/types/chat";
 import ChatSidebar from "@/components/ChatSidebar";
 import ChatArea from "@/components/ChatArea";
+import { marked } from "marked";
+import DOMPurify from "dompurify";
 
 const WORKER_URL = "https://restless-dawn-22da.sajjadramzan1211.workers.dev";
 
@@ -53,11 +55,14 @@ const Index = () => {
           if (c.id !== chatId) return c;
           const updated = {
             ...c,
-            title: c.messages.length === 0 ? content.slice(0, 30) + (content.length > 30 ? "..." : "") : c.title,
+            title:
+              c.messages.length === 0
+                ? content.slice(0, 30) + (content.length > 30 ? "..." : "")
+                : c.title,
             messages: [...c.messages, userMsg],
           };
           return updated;
-        })
+        }),
       );
 
       // Call Cloudflare Worker
@@ -72,16 +77,18 @@ const Index = () => {
         const aiText =
           data?.candidates?.[0]?.content?.parts?.[0]?.text ||
           "Sorry, I couldn't generate a response.";
+        const html = marked(aiText) as string;
+        const safeHtml = DOMPurify.sanitize(html);
         const aiMsg: Message = {
           id: createId(),
           role: "ai",
-          content: aiText,
+          content: safeHtml,
           timestamp: new Date(),
         };
         setChats((prev) =>
           prev.map((c) =>
-            c.id === chatId ? { ...c, messages: [...c.messages, aiMsg] } : c
-          )
+            c.id === chatId ? { ...c, messages: [...c.messages, aiMsg] } : c,
+          ),
         );
       } catch {
         const errMsg: Message = {
@@ -92,14 +99,14 @@ const Index = () => {
         };
         setChats((prev) =>
           prev.map((c) =>
-            c.id === chatId ? { ...c, messages: [...c.messages, errMsg] } : c
-          )
+            c.id === chatId ? { ...c, messages: [...c.messages, errMsg] } : c,
+          ),
         );
       } finally {
         setIsLoading(false);
       }
     },
-    [activeChatId]
+    [activeChatId],
   );
 
   const handleDeleteChat = useCallback(
@@ -107,7 +114,7 @@ const Index = () => {
       setChats((prev) => prev.filter((c) => c.id !== id));
       if (activeChatId === id) setActiveChatId(null);
     },
-    [activeChatId]
+    [activeChatId],
   );
 
   return (
@@ -119,7 +126,11 @@ const Index = () => {
         onNewChat={handleNewChat}
         onDeleteChat={handleDeleteChat}
       />
-      <ChatArea chat={activeChat} onSendMessage={handleSendMessage} isLoading={isLoading} />
+      <ChatArea
+        chat={activeChat}
+        onSendMessage={handleSendMessage}
+        isLoading={isLoading}
+      />
     </div>
   );
 };
